@@ -1,187 +1,105 @@
+<h1 align="center">🚖 Real-Time Ride Sharing Analytics using Apache Spark</h1>
 
-# **handson-spark-Ride-Sharing Platform Analytics**
+<h3 align="center">
+Streaming Data Pipeline | Spark Structured Streaming | PySpark | Data Engineering
+</h3>
 
-## **Prerequisites**
-
-Before starting the assignment, ensure the following tools are installed:
-
-1. **Python 3.x**  
-   - [Download Python](https://www.python.org/downloads/)  
-   - Verify installation:
-     ```bash
-     python --version
-     ```
-
-2. **PySpark**
-   - Install using pip:
-     ```bash
-     pip install pyspark
-     ```
-
-3. **Faker** (for optional data simulation)
-   - Install using pip:
-     ```bash
-     pip install faker
-     ```
+<p align="center"><em>"Processing real-time ride data to generate actionable insights using scalable streaming analytics."</em></p>
 
 ---
 
-## **Setup Instructions**
+## ✨ Overview
 
-- **task1.py**: Ingests and parses real-time ride data.
-- **task2.py**: Aggregates total fare and average distance by driver.
-- **task3.py**: Performs windowed fare trend analysis.
-- **data_generator.py**: Sends ride data to a socket for testing.
-- **output/**: CSV results from tasks 2 and 3.
-- **checkpoint/**: Spark checkpoints for streaming recovery.
+This project implements a **real-time analytics pipeline** for a ride-sharing platform using **Apache Spark Structured Streaming**.
+
+It simulates live ride data, processes streaming JSON input, and performs **real-time aggregations and trend analysis**.
+
+The project demonstrates how streaming data can be handled using **window functions, aggregation, and time-based analytics**, which are essential for modern data engineering systems.
 
 ---
 
-### **2. Running the Tasks**
+## 🚀 Key Features
 
-Run each script in a separate terminal after starting the simulator.
+- 📡 Real-time data ingestion using socket streaming  
+- 📥 JSON parsing into structured schema  
+- 📊 Aggregation of fare and distance by driver  
+- ⏰ Window-based time series analysis  
+- 📈 Trend analysis using sliding windows  
+- 📁 Exporting streaming results to CSV  
+- 🔄 Fault tolerance using Spark checkpoints  
 
+---
+
+## 🧠 Tech Stack
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![PySpark](https://img.shields.io/badge/PySpark-E25A1C?style=for-the-badge&logo=apachespark&logoColor=white)
+![Spark Streaming](https://img.shields.io/badge/Spark%20Streaming-E25A1C?style=for-the-badge)
+![Apache Spark](https://img.shields.io/badge/Apache%20Spark-E25A1C?style=for-the-badge&logo=apachespark&logoColor=white)
+
+---
+
+## 📂 Project Structure
+- task1.py # Real-time ingestion & parsing
+- task2.py # Aggregation by driver
+- task3.py # Windowed trend analysis
+- data_generator.py # Simulates streaming ride data
+- output/ # CSV outputs
+- checkpoint/ # Streaming checkpoints
+
+
+---
+
+## 📊 Dataset Schema (Simulated)
+
+| Field        | Description |
+|--------------|------------|
+| trip_id      | Unique ride ID |
+| driver_id    | Driver identifier |
+| distance_km  | Distance traveled |
+| fare_amount  | Fare collected |
+| timestamp    | Ride start time |
+
+---
+
+## 🔍 Analysis Performed
+
+### 📌 Real-Time Data Ingestion
+- Read streaming data from socket (`localhost:9999`)
+- Parsed JSON using predefined schema  
+
+### 📌 Driver-Level Aggregation
+- Computed total fare and average distance  
+- Used **sliding windows (2 minutes)**  
+
+### 📌 Trend Analysis
+- Applied **5-minute windows with 1-minute slide**  
+- Calculated total fare trends over time  
+
+---
+
+## ⚙️ How to Run
+
+### Step 1: Install dependencies
+```bash
+pip install pyspark faker
+
+```
+### Step 2: Start data generator
+```bash
+python data_generator.py
+
+```
+### Step 3: Run streaming tasks (in separate terminals)
 ```bash
 python task1.py
 python task2.py
 python task3.py
-```
-
----
-
-## **Overview**
-
-In this hands-on assignment, we build a **real-time analytics pipeline** for a ride-sharing platform using Apache Spark Structured Streaming. The system simulates real-time trip data, performs driver-level aggregations, and analyzes fare trends over time.
-
-This assignment helps build skills in real-time streaming, JSON parsing, time-based analytics, and windowed aggregations — foundational in data engineering and stream processing.
-
----
-
-## **Objectives**
-
-1. Ingest and parse real-time JSON data from a socket.
-2. Aggregate total fare and average distance by driver.
-3. Perform time-based trend analysis on fare totals.
-4. Output streaming results to the console and CSV.
-
----
-
-## **Dataset Structure (Simulated)**
-
-| Field        | Type    | Description                        |
-|--------------|---------|------------------------------------|
-| trip_id      | String  | Unique ID for each ride            |
-| driver_id    | String  | ID of the driver                   |
-| distance_km  | Float   | Trip distance in kilometers        |
-| fare_amount  | Float   | Total fare for the trip            |
-| timestamp    | String  | Ride start time (YYYY-MM-DD HH:MM:SS) |
-
----
-
-## **Assignment Tasks**
-
----
-
-### **1. Ingest & Parse Real-Time Ride Data**
-
-**Objective:**
-- Read streaming data from `localhost:9999`
-- Parse JSON into structured fields
-
-**Techniques Used:**
-- `spark.readStream.format("socket")`
-- `from_json()` with a custom schema
-- `writeStream.format("console")`
-
-**Output:**
 
 ```
-+---------------------------------------+----------+-----------+-----------+-------------------+
-|trip_id                                |driver_id |distance_km|fare_amount|timestamp          |
-+---------------------------------------+----------+-----------+-----------+-------------------+
-|3efac5bd-abac-4bbe-9cc4-ecc1346dfd40   |91        |36.24      |62.32      |2025-04-01 23:37:35|
-
-```
-
----
-
-### **2. Real-Time Aggregation by Driver**
-
-**Objective:**
-- Computing total fare and average distance grouped by driver within a time window.
-
-**Approach:**
-- Group by `driver_id` and 2-minute sliding windows
-- Output to console and CSV (using `foreachBatch`)
-
-**Output Columns:**
-- `driver_id`, `total_fare`, `avg_distance`, `window_start`, `window_end`
-
-**CSV Output:**
-
-```
-+---------+----------+------------+--------------------------+------------------------+
-|driver_id|total_fare|avg_distance|    window_start          |    window_end          |
-+---------+----------+------------+--------------------------+------------------------+
-|85       |6.94      |20.72       |2025-04-02T00:05:00.000Z  |2025-04-02T00:07:00.000Z|
-+---------+----------+------------+--------------------------+------------------------+
-|35       |146.72    |12.99       |2025-04-02T00:04:00.000Z  |2025-04-02T00:06:00.000Z|
-+---------+----------+------------+--------------------------+------------------------+
-
-```
-
----
-
-### **3. Windowed Fare Trend Analysis**
-
-**Objective:**
-- Analyze fare trends over time using 5-minute sliding windows (every 1 minute)
-
-**Approach:**
-- Convert string timestamps to `TimestampType`
-- Use `.groupBy(window(...))` with watermark
-- Output results to CSV
-
-**Output Columns:**
-- `window_start`, `window_end`, `total_fare`
-
-**CSV Output:**
-
-```
-+------------------------+---------------------------------+---------------------+
-|window_start            |window_end                       |    total_fare       |
-+------------------------+---------------------------------+---------------------+
-|2025-04-01T23:36:00.000Z|2025-04-01T23:41:00.000Z         |     3534.67         |
-+------------------------+---------------------------------+---------------------+
-```
-
----
-
-## **Simulating Ride Data**
-
-Use the provided `data_generator.py` to send sample ride data to the socket:
-
-```bash
-python data_generator.py
-```
-
-The simulator generates one ride record per second in this format:
-
-```json
-{
-  "trip_id": "t001",
-  "driver_id": "d1",
-  "distance_km": 5.2,
-  "fare_amount": 12.5,
-  "timestamp": "2025-04-02 00:00:00"
-}
-```
-
----
-
-
-## **Conclusion**
-
-This assignment gives hands-on experience in real-time streaming analytics, simulating real-world ride data. It prepares for data engineering roles working with tools like Apache Spark, Kafka, and streaming data pipelines.
-
----
+## 📌 Project Highlights
+- Built a real-time streaming data pipeline
+- Used Spark Structured Streaming
+- Applied window functions & time-based analytics
+- Simulated real-world ride-sharing data
+- Implemented fault-tolerant streaming (checkpointing)
